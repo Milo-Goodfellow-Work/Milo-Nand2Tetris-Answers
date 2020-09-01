@@ -1,0 +1,40 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/a/PC.hdl
+
+/**
+ * A 16-bit counter with load and reset control bits.
+ * if      (reset[t] == 1) out[t+1] = 0
+ * else if (load[t] == 1)  out[t+1] = in[t]
+ * else if (inc[t] == 1)   out[t+1] = out[t] + 1  (integer addition)
+ * else                    out[t+1] = out[t]
+ */
+
+CHIP PC {
+    IN in[16],load,inc,reset;
+    OUT out[16];
+
+    PARTS:
+      Inc16 (in=usableOut, out=incrementFinal);
+
+      //Ok, lets think through this a different way
+      //We have all of our options, maybe we can run them through a set of multiple Muxs?
+      //Ok, lets imagine a choice between load and inc. Well, we could actually use the load variable to check to see if load is chosen.
+      //If it isn't, we can ignore the load option and continue with inc. This is because, although  we don't yet know that inc is selected, we know it MIGHT be.
+      //We then do the check again with inc and reset. We use the reset variable. Again, we realize that reset isn't chosen and that it may in fact be inc.
+      //We do one final comparison between inc and usableOut. This time we actually check inc itself, and it comes out as false.
+      //Given inc isn't chosen, we just maintain the same value.
+
+      //Ok, this is almost right. The problem is that, when we move to the next mux, our final output is reset again. Instead of the above, we start chosing between Increment and usableOut, then we check usableOut against load, and finally usableOut against reset.
+      //No, this still doesn't work. But it's closer again. We do start by checking between increment and usableOut, but then the next options will check between the output of increment + UsableOut and load, and finally load + firstOutput against reset.
+      //That will actually output what we need.
+
+      Mux16 (a=usableOut, b=incrementFinal, sel=inc, out=firstEvaluationOut);
+      Mux16 (a=firstEvaluationOut, b=in, sel=load, out=secondEvaluationOut);
+      Mux16 (a=secondEvaluationOut, b[0..15]=false, sel=reset, out=finalOut);
+
+      Register (in=finalOut, load=true, out=usableOut, out=out);
+
+
+}

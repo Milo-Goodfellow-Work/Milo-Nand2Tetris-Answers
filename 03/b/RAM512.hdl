@@ -1,0 +1,47 @@
+// This file is part of the materials accompanying the book
+// "The Elements of Computing Systems" by Nisan and Schocken,
+// MIT Press. Book site: www.idc.ac.il/tecs
+// File name: projects/03/b/RAM512.hdl
+
+/**
+ * Memory of 512 registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then
+ * the in value is loaded into the memory location specified by address
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM512 {
+    IN in[16], load, address[9];
+    OUT out[16];
+
+    PARTS:
+    Or (a=address[0], b=false, out=address0);
+    Or (a=address[1], b=false, out=address1);
+    Or (a=address[2], b=false, out=address2);
+    Or (a=address[3], b=false, out=address3);
+    Or (a=address[4], b=false, out=address4);
+    Or (a=address[5], b=false, out=address5);
+    Or (a=address[6], b=false, out=address6);
+    Or (a=address[7], b=false, out=address7);
+    Or (a=address[8], b=false, out=address8);
+
+    DMux8Way (in=load, sel[0]=address0, sel[1]=address1, sel[2]=address2, a=registerZero, b=registerOne, c=registerTwo, d=registerThree, e=registerFour, f=registerFive, g=registerSix, h=registerSeven);
+
+    RAM64 (in=in, load=registerZero, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, out=storeZero);
+
+    RAM64 (in=in, load=registerOne, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, out=storeOne);
+
+    RAM64 (in=in, load=registerTwo, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, out=storeTwo);
+
+    RAM64 (in=in, load=registerThree, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, out=storeThree);
+
+    RAM64 (in=in, load=registerFour, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, out=storeFour);
+
+    RAM64 (in=in, load=registerFive, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, out=storeFive);
+
+    RAM64 (in=in, load=registerSix, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, out=storeSix);
+
+    RAM64 (in=in, load=registerSeven, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, out=storeSeven);
+
+    Mux8Way16 (a=storeZero, b=storeOne, c=storeTwo, d=storeThree, e=storeFour, f=storeFive, g=storeSix, h=storeSeven, sel[0]=address0, sel[1]=address1, sel[2]=address2, out=out);
+}

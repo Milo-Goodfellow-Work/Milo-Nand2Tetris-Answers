@@ -1,0 +1,50 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/03/b/RAM4K.hdl
+
+/**
+ * Memory of 4K registers, each 16 bit-wide. Out holds the value
+ * stored at the memory location specified by address. If load==1, then
+ * the in value is loaded into the memory location specified by address
+ * (the loaded value will be emitted to out from the next time step onward).
+ */
+
+CHIP RAM4K {
+    IN in[16], load, address[12];
+    OUT out[16];
+
+    PARTS:
+      Or (a=address[0], b=false, out=address0);
+      Or (a=address[1], b=false, out=address1);
+      Or (a=address[2], b=false, out=address2);
+      Or (a=address[3], b=false, out=address3);
+      Or (a=address[4], b=false, out=address4);
+      Or (a=address[5], b=false, out=address5);
+      Or (a=address[6], b=false, out=address6);
+      Or (a=address[7], b=false, out=address7);
+      Or (a=address[8], b=false, out=address8);
+      Or (a=address[9], b=false, out=address9);
+      Or (a=address[10], b=false, out=address10);
+      Or (a=address[11], b=false, out=address11);
+
+      DMux8Way (in=load, sel[0]=address0, sel[1]=address1, sel[2]=address2, a=registerZero, b=registerOne, c=registerTwo, d=registerThree, e=registerFour, f=registerFive, g=registerSix, h=registerSeven);
+
+      RAM512 (in=in, load=registerZero, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, address[6]=address9, address[7]=address10, address[8]=address11, out=storeZero);
+
+      RAM512 (in=in, load=registerOne, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, address[6]=address9, address[7]=address10, address[8]=address11, out=storeOne);
+
+      RAM512 (in=in, load=registerTwo, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, address[6]=address9, address[7]=address10, address[8]=address11, out=storeTwo);
+
+      RAM512 (in=in, load=registerThree, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, address[6]=address9, address[7]=address10, address[8]=address11, out=storeThree);
+
+      RAM512 (in=in, load=registerFour, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, address[6]=address9, address[7]=address10, address[8]=address11, out=storeFour);
+
+      RAM512 (in=in, load=registerFive, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, address[6]=address9, address[7]=address10, address[8]=address11, out=storeFive);
+
+      RAM512 (in=in, load=registerSix, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, address[6]=address9, address[7]=address10, address[8]=address11, out=storeSix);
+
+      RAM512 (in=in, load=registerSeven, address[0]=address3, address[1]=address4, address[2]=address5, address[3]=address6, address[4]=address7, address[5]=address8, address[6]=address9, address[7]=address10, address[8]=address11, out=storeSeven);
+
+      Mux8Way16 (a=storeZero, b=storeOne, c=storeTwo, d=storeThree, e=storeFour, f=storeFive, g=storeSix, h=storeSeven, sel[0]=address0, sel[1]=address1, sel[2]=address2, out=out);
+}
